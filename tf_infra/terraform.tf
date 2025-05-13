@@ -1,5 +1,4 @@
 terraform {
-  /*
   backend "s3" {
     bucket         = "tf-s3-backend-bucket453"
     key            = "tf_infra/terraform.tfstate"
@@ -7,7 +6,6 @@ terraform {
     dynamodb_table = "terraform-locks"
     encrypt        = true
   }
-*/
 
   required_version = ">= 1.0.0"
   required_providers {
