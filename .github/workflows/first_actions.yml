@@ -11,7 +11,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     defaults:
       run:
-        working-directory: src
+        working-directory: tf_infra
 
     steps:
       - name: Checkout
@@ -26,7 +26,6 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
-        working-directory: ./tf_infra
 
       - name: Terraform Init
         id: init
