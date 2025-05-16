@@ -46,29 +46,6 @@ resource "aws_instance" "webserver" {
   }
 }
 
-#Create S3 bucket, enable versioning and create a DynamoDBTable to conduct locking.
-resource "aws_s3_bucket" "example" {
-  bucket = "tf-s3-backend-bucket453"
-}
-
-resource "aws_s3_bucket_versioning" "versioning_example" {
-  bucket = aws_s3_bucket.example.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_dynamodb_table" "tf_locks" {
-  name         = "terraform-locks"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-}
-
 #Define the VPC
 resource "aws_vpc" "vpc" {
   cidr_block = var.vpc_cidr

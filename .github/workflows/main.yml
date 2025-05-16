@@ -1,4 +1,4 @@
-name: My First GitHub Actions
+name: Healet Jewellery GitHub Actions CI/CD pipeline
 
 on: [push]
 
