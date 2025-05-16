@@ -3,7 +3,7 @@ terraform {
     bucket       = "tf-s3-backend-bucket453"
     key          = "tf_infra/terraform.tfstate"
     region       = "eu-west-2"
-    use_lockfile = true
+    dynamodb_table = "terraform-locks"
     encrypt      = true
   }
   required_version = ">= 1.0.0"
