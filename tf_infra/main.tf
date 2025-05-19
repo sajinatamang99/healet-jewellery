@@ -45,13 +45,14 @@ resource "aws_instance" "webserver" {
     Environment = "demo"          # Optional additional tags
   }
   metadata_options {
-  http_tokens = "required"
+    http_tokens = "required"
   }
   root_block_device {
     encrypted = true
   }
 }
 
+#vpc flow logs
 resource "aws_cloudwatch_log_group" "vpc_logs" {
   name              = "/aws/vpc/flow-logs"
   retention_in_days = 14
