@@ -44,6 +44,57 @@ resource "aws_instance" "webserver" {
     Name        = "demo-instance" # This is the instance name in AWS
     Environment = "demo"          # Optional additional tags
   }
+  metadata_options {
+  http_tokens = "required"
+  }
+  root_block_device {
+    encrypted = true
+  }
+}
+
+resource "aws_cloudwatch_log_group" "vpc_logs" {
+  name              = "/aws/vpc/flow-logs"
+  retention_in_days = 14
+}
+
+resource "aws_iam_role" "vpc_flow_log_role" {
+  name = "vpc-flow-log-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "vpc-flow-logs.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "vpc_flow_log_policy" {
+  name = "vpc-flow-log-policy"
+  role = aws_iam_role.vpc_flow_log_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      Resource = "${aws_cloudwatch_log_group.vpc_logs.arn}:*"
+    }]
+  })
+}
+
+resource "aws_flow_log" "vpc_flow_log" {
+  log_destination      = aws_cloudwatch_log_group.vpc_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.vpc.id
+  iam_role_arn         = aws_iam_role.vpc_flow_log_role.arn
 }
 
 #Define the VPC
@@ -166,6 +217,7 @@ resource "aws_security_group" "demo_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
+    description = "Allow HTTP from office"
   }
 
   # Allow HTTPS (Port 443)
@@ -174,6 +226,7 @@ resource "aws_security_group" "demo_sg" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
+    description = "Allow HTTPS from office"
   }
 
   # Allow SSH (Port 22)
@@ -182,6 +235,7 @@ resource "aws_security_group" "demo_sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Open to all, but it's better to restrict to your IP
+    description = "Allow SSH"
   }
   #egress deals outbound rules
   # Allow all outbound traffic
@@ -190,6 +244,7 @@ resource "aws_security_group" "demo_sg" {
     to_port     = 0
     protocol    = "-1" # Allows all outbound traffic
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow traffic out"
   }
 
   tags = {
