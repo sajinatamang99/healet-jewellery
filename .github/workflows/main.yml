@@ -40,11 +40,9 @@ jobs:
         with:
           scan-type: config
           scan-ref: tf_infra
-          #format: "table ignore"
+          format: "table"
           exit-code: "0" 
           ignore-unfixed: true
-          format: template
-          template: "@contrib/iac/html.tpl" 
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
