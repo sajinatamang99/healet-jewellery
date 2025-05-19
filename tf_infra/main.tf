@@ -46,6 +46,7 @@ resource "aws_instance" "webserver" {
   }
   metadata_options {
     http_tokens = "required"
+    http_endpoint = "enabled"
   }
   root_block_device {
     encrypted = true
