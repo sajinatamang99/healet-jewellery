@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.0.1
           terraform_wrapper: false
@@ -34,6 +34,15 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
+
+      - name: Trivy IaC Scan (Terraform)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: config
+          scan-ref: tf_infra
+          format: "table"
+          exit-code: "0" 
+          ignore-unfixed: true
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
