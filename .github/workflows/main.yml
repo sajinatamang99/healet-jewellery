@@ -40,7 +40,7 @@ jobs:
         with:
           scan-type: config
           scan-ref: tf_infra
-          #format: "table"
+          #format: "table ignore"
           exit-code: "0" 
           ignore-unfixed: true
           format: template
