@@ -47,8 +47,8 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
       
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
         with:
           organization: Healet=Jewellery
           token: ${{ secrets.SONAR_TOKEN }}
