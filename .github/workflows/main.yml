@@ -50,7 +50,6 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          organization: Healet=Jewellery
           token: ${{ secrets.SONAR_TOKEN }}
           args: >
             -Dsonar.projectKey=healet-jewellery
