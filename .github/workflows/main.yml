@@ -54,7 +54,5 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=healet-jewellery
-            -Dsonar.organization=Healet-Jewellery
+            -Dsonar.organization=sajinatamang99
             -Dsonar.branch.name=feat2
-
-      
