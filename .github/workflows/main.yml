@@ -53,6 +53,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=healet-jewellery
+            -Dsonar.projectKey=sajinatamang99_healet-jewellery
             -Dsonar.organization=sajinatamang99
             -Dsonar.branch.name=feat2
