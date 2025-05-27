@@ -55,4 +55,5 @@ jobs:
           args: >
             -Dsonar.projectKey=healet-jewellery
             -Dsonar.organization=Healet-Jewellery
+            -X
       
