@@ -8,6 +8,11 @@ variable "ami_id" {
   description = "AMI for the instance"
 }
 
+variable "keypair" {
+  type = string
+  default = "healet-keypair"
+  description = "key pair for healet-linux instance"
+}
 variable "instance_type" {
   type        = string
   default     = "t2.micro"
@@ -36,4 +41,37 @@ variable "public_subnets" {
     "public_subnet_1" = 0
     "public_subnet_2" = 1
   }
+}
+
+# Variables for module:rds_mysql
+variable "db_name" {
+  default     = "healetdb"
+  type = string
+  description = "Database name"
+}
+
+variable "db_username" {
+  default = "Your-Username"
+  description = "Master DB username"
+  type        = string
+}
+variable "db_password" {
+  default = "Your-pwd"
+  description = "Database password"
+  type        = string
+  sensitive   = true
+}
+variable "vpc_id" {
+  description = "VPC ID to deploy RDS in"
+  type        = string
+}
+
+variable "db_subnet_ids" {
+  description = "List of private subnet IDs for RDS"
+  type        = list(string)
+}
+
+variable "vpc_security_group_ids" {
+  description = "Security group(s) for RDS"
+  type        = list(string)
 }

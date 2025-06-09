@@ -47,6 +47,9 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
       
+      - name: Terraform Output
+        run: terraform output
+      
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
