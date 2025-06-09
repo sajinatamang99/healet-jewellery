@@ -9,8 +9,8 @@ variable "ami_id" {
 }
 
 variable "keypair" {
-  type = string
-  default = "healet-keypair"
+  type        = string
+  default     = "healet-keypair"
   description = "key pair for healet-linux instance"
 }
 variable "instance_type" {
@@ -46,17 +46,17 @@ variable "public_subnets" {
 # Variables for module:rds_mysql
 variable "db_name" {
   default     = "healetdb"
-  type = string
+  type        = string
   description = "Database name"
 }
 
 variable "db_username" {
-  default = "Your-Username"
+  default     = "Your-Username"
   description = "Master DB username"
   type        = string
 }
 variable "db_password" {
-  default = "Your-pwd"
+  default     = "Your-pwd"
   description = "Database password"
   type        = string
   sensitive   = true

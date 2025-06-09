@@ -20,7 +20,7 @@ resource "aws_db_instance" "mysql" {
   publicly_accessible     = false
   backup_retention_period = 7
   multi_az                = false
-  depends_on = [ aws_security_group.rds_sg ]
+  depends_on              = [aws_security_group.rds_sg]
 
   tags = {
     Name = "healet-mysql"
