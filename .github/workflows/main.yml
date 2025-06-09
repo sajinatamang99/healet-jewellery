@@ -1,6 +1,10 @@
 name: Healet Jewellery GitHub Actions CI/CD pipeline
 
-on: [push]
+on: 
+  push:
+    branches:
+      - feat      # plan only for non-prod
+      - master     # plan prod
 
 jobs:
   terraform:
@@ -20,7 +24,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.0.1
+          terraform_version: 1.6.6
           terraform_wrapper: false
 
       - name: Terraform Format
