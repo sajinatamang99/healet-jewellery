@@ -7,9 +7,26 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 data "aws_region" "current" {} #This retrieves the current AWS region that Terraform is using
 
+# Generate a new SSH key pair
+resource "tls_private_key" "my_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+# Save the private key to a local file
+resource "local_file" "private_key" {
+  filename = "${path.module}/../../demo-keypair.pem"
+  content  = tls_private_key.my_key.private_key_pem
+}
+
+# Create an AWS key pair using the public key to authenticate the SSH access to your EC2 instance.
+resource "aws_key_pair" "my_key" {
+  key_name   = "demo-keypair"
+  public_key = tls_private_key.my_key.public_key_openssh
+}
+
 # Create an EC2 instance for production with the below specifications
 resource "aws_instance" "webserver" {
-  key_name               = var.keypair
   ami                    = var.ami_id        # Replace with your region-specific AMI ID
   instance_type          = var.instance_type # Replace with your instance-type
   depends_on             = [aws_security_group.demo_sg, aws_subnet.public_subnets]
@@ -33,38 +50,6 @@ resource "aws_instance" "webserver" {
   }
   root_block_device {
     encrypted = true
-  }
-}
-
-module "rds_mysql" {
-  source      = "./modules/rds_mysql"
-  db_username = var.db_username
-  db_password = var.db_password
-  vpc_id      = aws_vpc.vpc.id
-  db_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id,
-  aws_subnet.private_subnets["private_subnet_2"].id]
-  vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
-  demo_sg                = aws_security_group.demo_sg.id #Pass this ONLY if needed in ingress rules
-}
-
-# Security Groups for RDS database
-resource "aws_security_group" "rds_sg" {
-  name        = "rds-sg"
-  description = "Allow MySQL from EC2"
-  vpc_id      = aws_vpc.vpc.id
-
-  ingress {
-    from_port       = 3306
-    to_port         = 3306
-    protocol        = "tcp"
-    security_groups = [aws_security_group.demo_sg.id] # Only allow EC2
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
