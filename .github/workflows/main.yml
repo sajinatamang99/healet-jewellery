@@ -62,3 +62,4 @@ jobs:
           args: >
             -Dsonar.projectKey=sajinatamang99_healet-jewellery
             -Dsonar.organization=healet-jewellery
+            -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
