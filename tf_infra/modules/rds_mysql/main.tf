@@ -9,6 +9,7 @@ resource "aws_db_subnet_group" "mysql_subnet_group" {
 resource "aws_db_instance" "mysql" {
   identifier              = "healet-mysql-db"
   allocated_storage       = 20
+  storage_encrypted       = true
   engine                  = "mysql"
   engine_version          = "8.0"
   instance_class          = "db.t3.micro"
