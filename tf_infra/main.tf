@@ -49,11 +49,11 @@ resource "aws_instance" "webserver" {
 }
 # Pass the rds_mysql module with the below specifications
 module "rds_mysql" {
-  source      = "./modules/rds_mysql"
-  db_username = var.db_username
-  db_password = var.db_password
-  vpc_id      = aws_vpc.vpc.id
-  db_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id]
+  source                 = "./modules/rds_mysql"
+  db_username            = var.db_username
+  db_password            = var.db_password
+  vpc_id                 = aws_vpc.vpc.id
+  db_subnet_ids          = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id]
   vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
   demo_sg                = aws_security_group.demo_sg.id #Pass this ONLY if needed in ingress rules
 }
