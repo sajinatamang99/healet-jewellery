@@ -51,12 +51,12 @@ variable "db_name" {
 }
 
 variable "db_username" {
-  default     = "Your-Username"
+  default     = "YourUsername"
   description = "Master DB username"
   type        = string
 }
 variable "db_password" {
-  default     = "Your-pwd"
+  default     = "Yourpassword"
   description = "Database password"
   type        = string
   sensitive   = true
