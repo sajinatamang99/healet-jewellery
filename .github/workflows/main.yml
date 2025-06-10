@@ -3,8 +3,8 @@ name: Healet Jewellery GitHub Actions CI/CD pipeline
 on: 
   push:
     branches:
-      - feat      # plan only for non-prod
       - master     # plan prod
+      - feat*      # plan only for non-prod
 
 jobs:
   terraform:
