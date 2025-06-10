@@ -7,21 +7,33 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 data "aws_region" "current" {} #This retrieves the current AWS region that Terraform is using
 
-# Create an EC2 instance for production with the below specifications
+# Create an EC2 instance with the below specifications
 resource "aws_instance" "webserver" {
   key_name               = var.keypair
   ami                    = var.ami_id        # Replace with your region-specific AMI ID
   instance_type          = var.instance_type # Replace with your instance-type
   depends_on             = [aws_security_group.demo_sg, aws_subnet.public_subnets]
   vpc_security_group_ids = [aws_security_group.demo_sg.id]
-  subnet_id              = aws_subnet.public_subnets["public_subnet_1"].id
-  user_data              = <<-EOF
-    #!/bin/bash 
-    apt update 
+  subnet_id              = [aws_subnet.public_subnets["public_subnet_1"].id, aws_subnet.public_subnets["public_subnet_2"].id]
+
+  user_data = <<-EOF
+    #!/bin/bash
+    apt update
     apt install -y apache2
+
+    # Clone your app from GitHub
+    cd /opt
+    git clone https://github.com/sajinatamang99/healet-jewellery.git
+   
+    # Remove the apache index/default page
+    rm -rf /var/www/html/*
+    # Copy or symlink to Apache web root:
+    cp -r /opt/healet-jewellery/app/* /var/www/html/
+    chown -R www-data:www-data /var/www/html
+
     systemctl enable apache2
-    systemctl start apache2
-  EOF
+    systemctl restart apache2
+    EOF
 
   tags = {
     Name        = "demo-instance" # This is the instance name in AWS
@@ -35,7 +47,7 @@ resource "aws_instance" "webserver" {
     encrypted = true
   }
 }
-
+# Pass the rds_mysql module with the below specifications
 module "rds_mysql" {
   source      = "./modules/rds_mysql"
   db_username = var.db_username
@@ -65,6 +77,54 @@ resource "aws_security_group" "rds_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Pass the monitoring module with the below specifications
+module "monitoring" {
+  source = "./modules/monitoring"
+  # Pass required variables
+  monitoring_keypair    = var.monitoring_keypair
+  ami_id                = var.ami_id
+  instance_type         = var.instance_type
+  vpc_id                = aws_vpc.vpc.id # Assuming you have a VPC module
+  monitoring_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id]
+  monitoring_sg_ids     = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
+}
+
+# Terraform Resource Block - Security Group to Allow Traffic
+resource "aws_security_group" "monitoring_sg" {
+  name        = "monitor-security-group"
+  description = "Allow Prometheus and Grafana traffic"
+  vpc_id      = aws_vpc.vpc.id
+  # ingress deals inbound rules
+  # Allow Prometheus (Port 9090)
+  ingress {
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
+    description = "Allow Prometheus from office"
+  }
+  # Allow Grafana (Port 3000)
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
+    description = "Allow Grafana from office"
+  }
+  #egress deals outbound rules
+  # Allow all outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # Allows all outbound traffic
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow traffic out"
+  }
+  tags = {
+    Name = "monitoring_sg"
   }
 }
 
