@@ -61,17 +61,3 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
-variable "vpc_id" {
-  description = "VPC ID to deploy RDS in"
-  type        = string
-}
-
-variable "db_subnet_ids" {
-  description = "List of private subnet IDs for RDS"
-  type        = list(string)
-}
-
-variable "vpc_security_group_ids" {
-  description = "Security group(s) for RDS"
-  type        = list(string)
-}
