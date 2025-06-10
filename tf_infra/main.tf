@@ -88,7 +88,7 @@ module "monitoring" {
   instance_type         = var.instance_type
   vpc_id                = aws_vpc.vpc.id # Assuming you have a VPC module
   monitoring_subnet_ids = [aws_subnet.public_subnets["public_subnet_1"].id]
-  monitoring_sg_ids     = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
+  monitoring_sg_ids     = [aws_security_group.monitoring_sg.id, aws_security_group.demo_sg.id]
 }
 
 # Terraform Resource Block - Security Group to Allow Traffic
