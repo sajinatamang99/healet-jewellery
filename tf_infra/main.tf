@@ -14,7 +14,7 @@ resource "aws_instance" "webserver" {
   instance_type          = var.instance_type # Replace with your instance-type
   depends_on             = [aws_security_group.demo_sg, aws_subnet.public_subnets]
   vpc_security_group_ids = [aws_security_group.demo_sg.id]
-  subnet_id              = [aws_subnet.public_subnets["public_subnet_1"].id, aws_subnet.public_subnets["public_subnet_2"].id]
+  subnet_id              = aws_subnet.public_subnets["public_subnet_1"].id
 
   user_data = <<-EOF
     #!/bin/bash
@@ -53,8 +53,7 @@ module "rds_mysql" {
   db_username = var.db_username
   db_password = var.db_password
   vpc_id      = aws_vpc.vpc.id
-  db_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id,
-  aws_subnet.private_subnets["private_subnet_2"].id]
+  db_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id]
   vpc_security_group_ids = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
   demo_sg                = aws_security_group.demo_sg.id #Pass this ONLY if needed in ingress rules
 }
@@ -88,7 +87,7 @@ module "monitoring" {
   ami_id                = var.ami_id
   instance_type         = var.instance_type
   vpc_id                = aws_vpc.vpc.id # Assuming you have a VPC module
-  monitoring_subnet_ids = [aws_subnet.private_subnets["private_subnet_1"].id, aws_subnet.private_subnets["private_subnet_2"].id]
+  monitoring_subnet_ids = aws_subnet.public_subnets["public_subnet_1"].id
   monitoring_sg_ids     = [aws_security_group.rds_sg.id, aws_security_group.demo_sg.id]
 }
 
