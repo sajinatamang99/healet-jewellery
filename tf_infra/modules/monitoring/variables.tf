@@ -16,15 +16,10 @@ variable "monitoring_keypair" {
   type        = string
 }
 
-variable "vpc_id" {
-  description = "VPC ID where the resources should be created"
-  type        = string
-}
-
 variable "monitoring_sg_ids" {
   type = list(string)
 }
 variable "monitoring_subnet_ids" {
   description = "List of subnet IDs to deploy monitoring instances (Prometheus/Grafana)"
-  type        = list(string)
+  type        = string
 }
