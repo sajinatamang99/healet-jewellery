@@ -59,3 +59,10 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+# Variables for monitoring prometheus & grafana
+variable "monitoring_keypair" {
+  default     = "prometheus-keypair"
+  description = "Key pair name"
+  type        = string
+}
