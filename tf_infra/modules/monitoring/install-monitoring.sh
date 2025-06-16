@@ -18,6 +18,10 @@ sudo cp promtool /usr/local/bin/
 sudo cp -r consoles/ console_libraries/ /etc/prometheus/
 sudo cp prometheus.yml /etc/prometheus/
 
+# Set ownership so Prometheus can access its files
+sudo chown -R prometheus:prometheus /etc/prometheus
+sudo chown -R prometheus:prometheus /var/lib/prometheus
+
 # --- Prometheus service ---
 cat <<EOF | sudo tee /etc/systemd/system/prometheus.service
 [Unit]
