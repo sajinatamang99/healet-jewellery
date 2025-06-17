@@ -112,7 +112,7 @@ resource "aws_security_group" "monitoring_sg" {
     cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
     description = "Allow Grafana from office"
   }
-    # Allow Node exporter (Port 9100)
+  # Allow Node exporter (Port 9100)
   ingress {
     from_port   = 9100
     to_port     = 9100
