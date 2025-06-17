@@ -26,7 +26,7 @@ global:
 scrape_configs:
   - job_name: 'node_exporter'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:9100', 18.170.223.88:9090]
 EOF
 # Set ownership so Prometheus can access its files
 sudo chown -R prometheus:prometheus /etc/prometheus

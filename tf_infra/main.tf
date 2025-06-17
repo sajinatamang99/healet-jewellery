@@ -33,6 +33,37 @@ resource "aws_instance" "webserver" {
 
     systemctl enable apache2
     systemctl restart apache2
+
+    # --- Install Node Exporter ---
+    useradd --no-create-home --shell /bin/false node_exporter
+
+    cd /tmp
+    NODE_EXPORTER_VERSION="1.8.0"
+    wget https://github.com/prometheus/node_exporter/releases/download/v\${NODE_EXPORTER_VERSION}/node_exporter-\${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+    tar xvf node_exporter-\${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
+    cp node_exporter-\${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
+    chown node_exporter:node_exporter /usr/local/bin/node_exporter
+
+    # Create systemd service
+    cat <<EOT | tee /etc/systemd/system/node_exporter.service
+    [Unit]
+    Description=Node Exporter
+    Wants=network-online.target
+    After=network-online.target
+
+    [Service]
+    User=node_exporter
+    Group=node_exporter
+    Type=simple
+    ExecStart=/usr/local/bin/node_exporter
+
+    [Install]
+    WantedBy=multi-user.target
+    EOT
+
+    systemctl daemon-reload
+    systemctl enable node_exporter
+    systemctl start node_exporter
     EOF
 
   tags = {
@@ -112,14 +143,7 @@ resource "aws_security_group" "monitoring_sg" {
     cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
     description = "Allow Grafana from office"
   }
-  # Allow Node exporter (Port 9100)
-  ingress {
-    from_port   = 9100
-    to_port     = 9100
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
-    description = "Allow Node exporter from office"
-  }
+
   #egress deals outbound rules
   # Allow all outbound traffic
   egress {
@@ -319,6 +343,14 @@ resource "aws_security_group" "demo_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Open to all, but it's better to restrict to your IP
     description = "Allow SSH"
+  }
+  # Allow Node exporter (Port 9100)
+  ingress {
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Open to all (change for security if needed)
+    description = "Allow Node exporter from office"
   }
   #egress deals outbound rules
   # Allow all outbound traffic
