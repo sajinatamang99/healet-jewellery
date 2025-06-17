@@ -56,9 +56,6 @@ jobs:
       - name: Terraform Output
         run: terraform output
       
-      - name: Terraform Show - Resource Summary
-        run: terraform show -no-color | grep '^#'
-        
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         env:
