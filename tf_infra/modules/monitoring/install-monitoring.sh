@@ -18,11 +18,21 @@ sudo cp promtool /usr/local/bin/
 sudo cp -r consoles/ console_libraries/ /etc/prometheus/
 sudo cp prometheus.yml /etc/prometheus/
 
+# Set up Prometheus config file
+cat <<EOF | sudo tee /etc/prometheus/prometheus.yml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+EOF
 # Set ownership so Prometheus can access its files
 sudo chown -R prometheus:prometheus /etc/prometheus
 sudo chown -R prometheus:prometheus /var/lib/prometheus
 
-# --- Prometheus service ---
+# --- Create Prometheus systemd service ---
 cat <<EOF | sudo tee /etc/systemd/system/prometheus.service
 [Unit]
 Description=Prometheus
@@ -48,8 +58,8 @@ cd /tmp
 NODE_EXPORTER_VERSION="1.8.0"
 wget https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
 tar xvf node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz
-cp node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
-useradd --no-create-home --shell /bin/false node_exporter
+sudo cp node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter /usr/local/bin/
+sudo useradd --no-create-home --shell /bin/false node_exporter
 
 # Node Exporter service
 cat <<EOF > /etc/systemd/system/node_exporter.service
